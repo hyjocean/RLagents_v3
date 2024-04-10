@@ -1,0 +1,27 @@
+observation: 
+  type: "EnvWorld"
+map_generator: 
+action: 
+  type: "EnvAction"
+
+num_agents: 1
+observation_size: 10
+DIAGONAL_MOVEMENT: False
+SIZE: [(10,15)]
+PROB: [(0,.5)]
+FULL_HELP: False
+screen_width: 1000  # [px]
+screen_height: 1000  # [px]
+            # above are PRIMAL need paras
+viewer:
+frozen_steps:
+simulation_frequency: 15  # [Hz]
+policy_frequency: 1  # [Hz]
+# other_vehicles_type: "highway_env.vehicle.behavior.IDMVehicle"
+centering_position: [0.3, 0.5]
+scaling: 5.5
+show_trajectories: False
+render_agent: True
+offscreen_rendering: os.environ.get("OFFSCREEN_RENDERING", "0") == "1"
+manual_control: False
+real_time_rendering: False

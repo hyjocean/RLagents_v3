@@ -1,0 +1,72 @@
+2024-04-08 20:11:47,129 INFO    StreamThr :184582 [internal.py:wandb_internal():86] W&B internal server running at pid: 184582, started at: 2024-04-08 20:11:47.128646
+2024-04-08 20:11:47,140 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status
+2024-04-08 20:11:47,143 INFO    WriterThread:184582 [datastore.py:open_for_write():87] open: /home/bld/HK_RL/RLagents_v3/wandb/run-20240408_201147-8wgvpxo1/run-8wgvpxo1.wandb
+2024-04-08 20:11:47,145 DEBUG   SenderThread:184582 [sender.py:send():379] send: header
+2024-04-08 20:11:47,145 DEBUG   SenderThread:184582 [sender.py:send():379] send: run
+2024-04-08 20:11:48,034 INFO    SenderThread:184582 [dir_watcher.py:__init__():211] watching files in: /home/bld/HK_RL/RLagents_v3/wandb/run-20240408_201147-8wgvpxo1/files
+2024-04-08 20:11:48,035 INFO    SenderThread:184582 [sender.py:_start_run_threads():1124] run started: 8wgvpxo1 with start time 1712578307.125945
+2024-04-08 20:11:48,063 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: check_version
+2024-04-08 20:11:48,064 DEBUG   SenderThread:184582 [sender.py:send_request():406] send_request: check_version
+2024-04-08 20:11:48,380 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: run_start
+2024-04-08 20:11:48,393 DEBUG   HandlerThread:184582 [system_info.py:__init__():26] System info init
+2024-04-08 20:11:48,393 DEBUG   HandlerThread:184582 [system_info.py:__init__():41] System info init done
+2024-04-08 20:11:48,394 INFO    HandlerThread:184582 [system_monitor.py:start():194] Starting system monitor
+2024-04-08 20:11:48,395 INFO    HandlerThread:184582 [system_monitor.py:probe():214] Collecting system info
+2024-04-08 20:11:48,396 INFO    SystemMonitor:184582 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-04-08 20:11:48,401 INFO    SystemMonitor:184582 [interfaces.py:start():190] Started cpu monitoring
+2024-04-08 20:11:48,409 INFO    SystemMonitor:184582 [interfaces.py:start():190] Started disk monitoring
+2024-04-08 20:11:48,416 INFO    SystemMonitor:184582 [interfaces.py:start():190] Started gpu monitoring
+2024-04-08 20:11:48,423 INFO    SystemMonitor:184582 [interfaces.py:start():190] Started memory monitoring
+2024-04-08 20:11:48,431 INFO    SystemMonitor:184582 [interfaces.py:start():190] Started network monitoring
+2024-04-08 20:11:48,470 DEBUG   HandlerThread:184582 [system_info.py:probe():150] Probing system
+2024-04-08 20:11:48,479 DEBUG   HandlerThread:184582 [gitlib.py:_init_repo():56] git repository is invalid
+2024-04-08 20:11:48,479 DEBUG   HandlerThread:184582 [system_info.py:probe():198] Probing system done
+2024-04-08 20:11:48,480 DEBUG   HandlerThread:184582 [system_monitor.py:probe():223] {'os': 'Linux-6.5.0-26-generic-x86_64-with-glibc2.17', 'python': '3.8.19', 'heartbeatAt': '2024-04-08T12:11:48.470925', 'startedAt': '2024-04-08T12:11:47.110138', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': '/home/bld/HK_RL/RLagents_v3/scripts_0.py', 'codePathLocal': 'scripts_0.py', 'codePath': 'scripts_0.py', 'host': 'gpu2', 'username': 'bld', 'executable': '/home/bld/anaconda3/envs/raylib/bin/python', 'cpu_count': 32, 'cpu_count_logical': 64, 'cpu_freq': {'current': 1104.2205625000001, 'min': 800.0, 'max': 3500.0}, 'cpu_freq_per_core': [{'current': 800.059, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.187, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2200.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2200.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2201.041, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2200.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.239, 'min': 800.0, 'max': 3500.0}, {'current': 2200.728, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2202.197, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 1000.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 1599.995, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2200.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.469, 'min': 800.0, 'max': 3500.0}, {'current': 2200.932, 'min': 800.0, 'max': 3500.0}, {'current': 1586.351, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.504, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2202.975, 'min': 800.0, 'max': 3500.0}, {'current': 2202.239, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}], 'disk': {'/': {'total': 878.620922088623, 'used': 166.40553283691406}}, 'gpu': 'NVIDIA GeForce RTX 4090', 'gpu_count': 2, 'gpu_devices': [{'name': 'NVIDIA GeForce RTX 4090', 'memory_total': 25757220864}, {'name': 'NVIDIA GeForce RTX 4090', 'memory_total': 25757220864}], 'memory': {'total': 503.3001403808594}}
+2024-04-08 20:11:48,480 INFO    HandlerThread:184582 [system_monitor.py:probe():224] Finished collecting system info
+2024-04-08 20:11:48,480 INFO    HandlerThread:184582 [system_monitor.py:probe():227] Publishing system info
+2024-04-08 20:11:48,480 DEBUG   HandlerThread:184582 [system_info.py:_save_conda():207] Saving list of conda packages installed into the current environment
+2024-04-08 20:11:49,040 INFO    Thread-17 :184582 [dir_watcher.py:_on_file_created():271] file/dir created: /home/bld/HK_RL/RLagents_v3/wandb/run-20240408_201147-8wgvpxo1/files/conda-environment.yaml
+2024-04-08 20:11:50,157 DEBUG   HandlerThread:184582 [system_info.py:_save_conda():222] Saving conda packages done
+2024-04-08 20:11:50,224 INFO    HandlerThread:184582 [system_monitor.py:probe():229] Finished publishing system info
+2024-04-08 20:11:50,232 DEBUG   SenderThread:184582 [sender.py:send():379] send: files
+2024-04-08 20:11:50,233 INFO    SenderThread:184582 [sender.py:_save_file():1390] saving file wandb-metadata.json with policy now
+2024-04-08 20:11:50,503 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: python_packages
+2024-04-08 20:11:50,504 DEBUG   SenderThread:184582 [sender.py:send_request():406] send_request: python_packages
+2024-04-08 20:11:50,507 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: stop_status
+2024-04-08 20:11:50,508 DEBUG   SenderThread:184582 [sender.py:send_request():406] send_request: stop_status
+2024-04-08 20:11:50,515 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: internal_messages
+2024-04-08 20:11:50,957 DEBUG   SenderThread:184582 [sender.py:send():379] send: telemetry
+2024-04-08 20:11:51,036 INFO    Thread-17 :184582 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240408_201147-8wgvpxo1/files/conda-environment.yaml
+2024-04-08 20:11:51,037 INFO    Thread-17 :184582 [dir_watcher.py:_on_file_created():271] file/dir created: /home/bld/HK_RL/RLagents_v3/wandb/run-20240408_201147-8wgvpxo1/files/wandb-metadata.json
+2024-04-08 20:11:51,038 INFO    Thread-17 :184582 [dir_watcher.py:_on_file_created():271] file/dir created: /home/bld/HK_RL/RLagents_v3/wandb/run-20240408_201147-8wgvpxo1/files/output.log
+2024-04-08 20:11:51,039 INFO    Thread-17 :184582 [dir_watcher.py:_on_file_created():271] file/dir created: /home/bld/HK_RL/RLagents_v3/wandb/run-20240408_201147-8wgvpxo1/files/requirements.txt
+2024-04-08 20:11:51,274 INFO    wandb-upload_0:184582 [upload_job.py:push():131] Uploaded file /tmp/tmp57jy3obdwandb/ykzoetnl-wandb-metadata.json
+2024-04-08 20:11:52,964 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:11:53,038 INFO    Thread-17 :184582 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240408_201147-8wgvpxo1/files/output.log
+2024-04-08 20:11:57,966 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:12:02,967 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:12:05,506 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: stop_status
+2024-04-08 20:12:05,507 DEBUG   SenderThread:184582 [sender.py:send_request():406] send_request: stop_status
+2024-04-08 20:12:05,515 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: internal_messages
+2024-04-08 20:12:08,894 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:12:13,895 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:12:18,902 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:12:20,063 INFO    Thread-17 :184582 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240408_201147-8wgvpxo1/files/config.yaml
+2024-04-08 20:12:20,506 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: stop_status
+2024-04-08 20:12:20,507 DEBUG   SenderThread:184582 [sender.py:send_request():406] send_request: stop_status
+2024-04-08 20:12:20,549 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: internal_messages
+2024-04-08 20:12:24,885 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:12:29,886 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:12:34,888 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:12:35,506 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: stop_status
+2024-04-08 20:12:35,508 DEBUG   SenderThread:184582 [sender.py:send_request():406] send_request: stop_status
+2024-04-08 20:12:35,549 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: internal_messages
+2024-04-08 20:12:40,886 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:12:45,887 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:12:48,431 DEBUG   SystemMonitor:184582 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-04-08 20:12:48,438 DEBUG   SenderThread:184582 [sender.py:send():379] send: stats
+2024-04-08 20:12:50,507 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: stop_status
+2024-04-08 20:12:50,508 DEBUG   SenderThread:184582 [sender.py:send_request():406] send_request: stop_status
+2024-04-08 20:12:50,549 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: internal_messages
+2024-04-08 20:12:51,833 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report
+2024-04-08 20:12:56,834 DEBUG   HandlerThread:184582 [handler.py:handle_request():146] handle_request: status_report

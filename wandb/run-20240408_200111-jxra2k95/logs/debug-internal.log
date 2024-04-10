@@ -1,0 +1,7 @@
+2024-04-08 20:01:11,684 INFO    StreamThr :175524 [internal.py:wandb_internal():86] W&B internal server running at pid: 175524, started at: 2024-04-08 20:01:11.682840
+2024-04-08 20:01:11,694 DEBUG   HandlerThread:175524 [handler.py:handle_request():146] handle_request: status
+2024-04-08 20:01:11,698 INFO    WriterThread:175524 [datastore.py:open_for_write():87] open: /home/bld/HK_RL/RLagents_v3/wandb/run-20240408_200111-jxra2k95/run-jxra2k95.wandb
+2024-04-08 20:01:11,699 DEBUG   SenderThread:175524 [sender.py:send():379] send: header
+2024-04-08 20:01:11,699 DEBUG   SenderThread:175524 [sender.py:send():379] send: run
+2024-04-08 20:01:12,574 INFO    SenderThread:175524 [dir_watcher.py:__init__():211] watching files in: /home/bld/HK_RL/RLagents_v3/wandb/run-20240408_200111-jxra2k95/files
+2024-04-08 20:01:12,574 INFO    SenderThread:175524 [sender.py:_start_run_threads():1124] run started: jxra2k95 with start time 1712577671.67977
