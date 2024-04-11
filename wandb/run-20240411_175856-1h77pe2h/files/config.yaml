@@ -1,0 +1,36 @@
+wandb_version: 1
+
+learning_rate:
+  desc: null
+  value: 0.01
+architecture:
+  desc: null
+  value: CNN
+dataset:
+  desc: null
+  value: Random-map
+epochs:
+  desc: null
+  value: 1000
+_wandb:
+  desc: null
+  value:
+    python_version: 3.8.19
+    cli_version: 0.16.6
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1712829536.0
+    t:
+      1:
+      - 1
+      - 30
+      - 55
+      3:
+      - 16
+      - 23
+      4: 3.8.19
+      5: 0.16.6
+      8:
+      - 5
+      13: linux-x86_64

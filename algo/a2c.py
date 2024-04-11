@@ -76,10 +76,8 @@ class ActorNet(nn.Module):
         if goal_vector.ndim == 2:
             goal_vector = goal_vector.unsqueeze(0)  # 这会在第0维度增加一个维度
         
-        flat = self.cnn(maps)
-        goal_out = self.goal_layer(goal_vector)
-        # flat = self.cnn(maps.to(self.device))
-        # goal_out = self.goal_layer(goal_vector.to(self.device))
+        flat = self.cnn(maps.to(self.device))
+        goal_out = self.goal_layer(goal_vector.to(self.device))
         hidden_inp = torch.cat([flat.reshape(-1,500), goal_out.reshape(-1,12)], 1)
         hidden_state = self.hnn(hidden_inp)
         hidden_state = self.hrelu(hidden_state+hidden_inp)

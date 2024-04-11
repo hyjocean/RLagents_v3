@@ -1,0 +1,41 @@
+device: cuda:0
+padded_paths:[[(9, 4), (9, 14)], [(10, 4), (9, 13)], [(11, 4), (9, 12)], [(11, 5), (8, 12)], [(11, 6), (8, 11)], [(11, 7), (8, 10)], [(11, 8), (8, 9)], [(11, 9), (7, 9)], [(12, 9), (7, 8)], [(13, 9), (6, 8)], [(13, 10), (6, 7)], [(13, 11), (6, 6)], [(13, 12), (5, 6)], [(13, 13), (4, 6)], [(13, 14), (3, 6)], [(13, 15), (2, 6)], [(13, 15), (1, 6)], [(13, 15), (0, 6)]]
+14.19s - Error processing internal command.
+Traceback (most recent call last):
+  File "/home/bld/.vscode-server/extensions/ms-python.debugpy-2024.4.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/pydevd.py", line 1783, in process_internal_commands
+    int_cmd.do_it(self)
+  File "/home/bld/.vscode-server/extensions/ms-python.debugpy-2024.4.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_comm.py", line 528, in do_it
+    self.method(dbg, *self.args, **self.kwargs)
+  File "/home/bld/.vscode-server/extensions/ms-python.debugpy-2024.4.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_comm.py", line 1166, in internal_evaluate_expression_json
+    eval_result = pydevd_vars.evaluate_expression(py_db, frame, expression, is_exec=False)
+  File "/home/bld/.vscode-server/extensions/ms-python.debugpy-2024.4.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_vars.py", line 369, in new_func
+    with timeout_tracker.call_on_timeout(warn_evaluation_timeout, on_warn_evaluation_timeout):
+  File "/home/bld/.vscode-server/extensions/ms-python.debugpy-2024.4.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_timeout.py", line 192, in call_on_timeout
+    self._thread.start()
+  File "/home/bld/anaconda3/envs/raylib/lib/python3.8/threading.py", line 852, in start
+    _start_new_thread(self._bootstrap, ())
+  File "/home/bld/.vscode-server/extensions/ms-python.debugpy-2024.4.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydev_bundle/pydev_monkey.py", line 1179, in pydev_start_new_thread
+    return _original_start_new_thread(_UseNewThreadStartup(function, args, kwargs), ())
+RuntimeError: can't start new thread
+Exception in thread MsgRouterThr:
+Traceback (most recent call last):
+  File "/home/bld/anaconda3/envs/raylib/lib/python3.8/threading.py", line 932, in _bootstrap_inner
+    self.run()
+  File "/home/bld/anaconda3/envs/raylib/lib/python3.8/threading.py", line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/bld/anaconda3/envs/raylib/lib/python3.8/site-packages/wandb/sdk/interface/router.py", line 70, in message_loop
+    msg = self._read_message()
+  File "/home/bld/anaconda3/envs/raylib/lib/python3.8/site-packages/wandb/sdk/interface/router_sock.py", line 27, in _read_message
+    resp = self._sock_client.read_server_response(timeout=1)
+  File "/home/bld/anaconda3/envs/raylib/lib/python3.8/site-packages/wandb/sdk/lib/sock_client.py", line 285, in read_server_response
+    data = self._read_packet_bytes(timeout=timeout)
+  File "/home/bld/anaconda3/envs/raylib/lib/python3.8/site-packages/wandb/sdk/lib/sock_client.py", line 255, in _read_packet_bytes
+    data = self._sock.recv(self._bufsize)
+  File "/home/bld/.vscode-server/extensions/ms-python.debugpy-2024.4.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_trace_dispatch_regular.py", line 203, in trace_dispatch
+    py_db.enable_tracing(thread_trace_func)
+  File "/home/bld/.vscode-server/extensions/ms-python.debugpy-2024.4.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/pydevd.py", line 1107, in enable_tracing
+    pydevd_tracing.SetTrace(thread_trace_func)
+  File "/home/bld/.vscode-server/extensions/ms-python.debugpy-2024.4.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/pydevd_tracing.py", line 87, in SetTrace
+    if set_trace_to_threads(tracing_func, thread_idents=[thread.get_ident()], create_dummy_thread=False) == 0:
+  File "/home/bld/.vscode-server/extensions/ms-python.debugpy-2024.4.0-linux-x64/bundled/libs/debugpy/_vendored/pydevd/pydevd_tracing.py", line 354, in set_trace_to_threads
+    start_new_thread(increase_tracing_count, ())

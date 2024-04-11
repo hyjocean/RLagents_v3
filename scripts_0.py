@@ -137,8 +137,8 @@ def train_a2c(env, actor_net, critic_net, epochs=1000, actor_lr=0.01, critic_lr=
 
 
 config = load_config('/home/bld/HK_RL/RLagents_v3/config.yml')
-# device = torch.device(f"cuda:{config['gpu_id']}") if torch.cuda.is_available() else torch.device("cpu") 
-device = torch.device("cpu")
+device = torch.device(f"cuda:{config['gpu_id']}") if torch.cuda.is_available() else torch.device("cpu") 
+# device = torch.device("cpu")
 config['device'] = device
 print(f"device: {device}")
 # 创建网络和环境
