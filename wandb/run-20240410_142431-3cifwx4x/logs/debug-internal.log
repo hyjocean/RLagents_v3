@@ -1,0 +1,80 @@
+2024-04-10 14:24:31,256 INFO    StreamThr :173591 [internal.py:wandb_internal():86] W&B internal server running at pid: 173591, started at: 2024-04-10 14:24:31.255153
+2024-04-10 14:24:31,263 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status
+2024-04-10 14:24:31,268 INFO    WriterThread:173591 [datastore.py:open_for_write():87] open: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/run-3cifwx4x.wandb
+2024-04-10 14:24:31,269 DEBUG   SenderThread:173591 [sender.py:send():379] send: header
+2024-04-10 14:24:31,302 DEBUG   SenderThread:173591 [sender.py:send():379] send: run
+2024-04-10 14:24:31,911 INFO    SenderThread:173591 [dir_watcher.py:__init__():211] watching files in: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files
+2024-04-10 14:24:31,911 INFO    SenderThread:173591 [sender.py:_start_run_threads():1124] run started: 3cifwx4x with start time 1712730271.251865
+2024-04-10 14:24:31,959 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: check_version
+2024-04-10 14:24:31,961 DEBUG   SenderThread:173591 [sender.py:send_request():406] send_request: check_version
+2024-04-10 14:24:32,122 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: run_start
+2024-04-10 14:24:32,141 DEBUG   HandlerThread:173591 [system_info.py:__init__():26] System info init
+2024-04-10 14:24:32,141 DEBUG   HandlerThread:173591 [system_info.py:__init__():41] System info init done
+2024-04-10 14:24:32,141 INFO    HandlerThread:173591 [system_monitor.py:start():194] Starting system monitor
+2024-04-10 14:24:32,143 INFO    HandlerThread:173591 [system_monitor.py:probe():214] Collecting system info
+2024-04-10 14:24:32,149 INFO    SystemMonitor:173591 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-04-10 14:24:32,152 INFO    SystemMonitor:173591 [interfaces.py:start():190] Started cpu monitoring
+2024-04-10 14:24:32,160 INFO    SystemMonitor:173591 [interfaces.py:start():190] Started disk monitoring
+2024-04-10 14:24:32,169 INFO    SystemMonitor:173591 [interfaces.py:start():190] Started gpu monitoring
+2024-04-10 14:24:32,174 INFO    SystemMonitor:173591 [interfaces.py:start():190] Started memory monitoring
+2024-04-10 14:24:32,179 INFO    SystemMonitor:173591 [interfaces.py:start():190] Started network monitoring
+2024-04-10 14:24:32,230 DEBUG   HandlerThread:173591 [system_info.py:probe():150] Probing system
+2024-04-10 14:24:32,240 DEBUG   HandlerThread:173591 [system_info.py:_probe_git():135] Probing git
+2024-04-10 14:24:32,266 DEBUG   HandlerThread:173591 [system_info.py:_probe_git():143] Probing git done
+2024-04-10 14:24:32,266 DEBUG   HandlerThread:173591 [system_info.py:probe():198] Probing system done
+2024-04-10 14:24:32,266 DEBUG   HandlerThread:173591 [system_monitor.py:probe():223] {'os': 'Linux-6.5.0-26-generic-x86_64-with-glibc2.17', 'python': '3.8.19', 'heartbeatAt': '2024-04-10T06:24:32.230577', 'startedAt': '2024-04-10T06:24:31.235580', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': '/home/bld/HK_RL/RLagents_v3/scripts_0.py', 'codePathLocal': 'scripts_0.py', 'codePath': 'scripts_0.py', 'git': {'remote': 'https://github.com/hyjocean/RLagents_v3.git', 'commit': 'd19e182d3bb7c9047a017fd6a7033cb6b9d8a738'}, 'email': '1192713566@qq.com', 'root': '/home/bld/HK_RL/RLagents_v3', 'host': 'gpu2', 'username': 'bld', 'executable': '/home/bld/anaconda3/envs/raylib2/bin/python', 'cpu_count': 32, 'cpu_count_logical': 64, 'cpu_freq': {'current': 1229.13721875, 'min': 800.0, 'max': 3500.0}, 'cpu_freq_per_core': [{'current': 2300.0, 'min': 800.0, 'max': 3500.0}, {'current': 1758.261, 'min': 800.0, 'max': 3500.0}, {'current': 799.789, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.195, 'min': 800.0, 'max': 3500.0}, {'current': 2298.947, 'min': 800.0, 'max': 3500.0}, {'current': 2797.137, 'min': 800.0, 'max': 3500.0}, {'current': 1200.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.184, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2201.048, 'min': 800.0, 'max': 3500.0}, {'current': 2200.0, 'min': 800.0, 'max': 3500.0}, {'current': 1800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2201.919, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2316.144, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2201.901, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.682, 'min': 800.0, 'max': 3500.0}, {'current': 1500.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.249, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2300.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 3500.0, 'min': 800.0, 'max': 3500.0}, {'current': 1500.0, 'min': 800.0, 'max': 3500.0}, {'current': 2200.0, 'min': 800.0, 'max': 3500.0}, {'current': 3500.0, 'min': 800.0, 'max': 3500.0}, {'current': 2200.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2901.377, 'min': 800.0, 'max': 3500.0}, {'current': 2201.743, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 900.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 2200.959, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.856, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}, {'current': 800.0, 'min': 800.0, 'max': 3500.0}], 'disk': {'/': {'total': 878.620922088623, 'used': 202.17702865600586}}, 'gpu': 'NVIDIA GeForce RTX 4090', 'gpu_count': 2, 'gpu_devices': [{'name': 'NVIDIA GeForce RTX 4090', 'memory_total': 25757220864}, {'name': 'NVIDIA GeForce RTX 4090', 'memory_total': 25757220864}], 'memory': {'total': 503.3001480102539}}
+2024-04-10 14:24:32,266 INFO    HandlerThread:173591 [system_monitor.py:probe():224] Finished collecting system info
+2024-04-10 14:24:32,267 INFO    HandlerThread:173591 [system_monitor.py:probe():227] Publishing system info
+2024-04-10 14:24:32,267 DEBUG   HandlerThread:173591 [system_info.py:_save_conda():207] Saving list of conda packages installed into the current environment
+2024-04-10 14:24:32,916 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_created():271] file/dir created: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/conda-environment.yaml
+2024-04-10 14:24:37,455 DEBUG   HandlerThread:173591 [system_info.py:_save_conda():222] Saving conda packages done
+2024-04-10 14:24:37,526 INFO    HandlerThread:173591 [system_monitor.py:probe():229] Finished publishing system info
+2024-04-10 14:24:37,533 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:24:37,533 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: keepalive
+2024-04-10 14:24:37,536 DEBUG   SenderThread:173591 [sender.py:send():379] send: files
+2024-04-10 14:24:37,536 INFO    SenderThread:173591 [sender.py:_save_file():1390] saving file wandb-metadata.json with policy now
+2024-04-10 14:24:37,804 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: python_packages
+2024-04-10 14:24:37,806 DEBUG   SenderThread:173591 [sender.py:send_request():406] send_request: python_packages
+2024-04-10 14:24:37,808 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: stop_status
+2024-04-10 14:24:37,812 DEBUG   SenderThread:173591 [sender.py:send_request():406] send_request: stop_status
+2024-04-10 14:24:37,915 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/conda-environment.yaml
+2024-04-10 14:24:37,916 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_created():271] file/dir created: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/requirements.txt
+2024-04-10 14:24:37,917 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_created():271] file/dir created: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/wandb-metadata.json
+2024-04-10 14:24:38,220 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: internal_messages
+2024-04-10 14:24:38,288 DEBUG   SenderThread:173591 [sender.py:send():379] send: telemetry
+2024-04-10 14:24:38,432 INFO    wandb-upload_0:173591 [upload_job.py:push():131] Uploaded file /tmp/tmpxp058vqpwandb/akvr6en4-wandb-metadata.json
+2024-04-10 14:24:42,290 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:24:42,921 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_created():271] file/dir created: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/output.log
+2024-04-10 14:24:44,923 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/output.log
+2024-04-10 14:24:46,925 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/output.log
+2024-04-10 14:24:47,431 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:24:48,927 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/output.log
+2024-04-10 14:24:52,436 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:24:52,881 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: stop_status
+2024-04-10 14:24:52,883 DEBUG   SenderThread:173591 [sender.py:send_request():406] send_request: stop_status
+2024-04-10 14:24:53,528 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: internal_messages
+2024-04-10 14:24:56,936 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/output.log
+2024-04-10 14:24:57,937 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/output.log
+2024-04-10 14:24:58,371 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:25:02,942 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/output.log
+2024-04-10 14:25:04,160 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:25:04,945 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/config.yaml
+2024-04-10 14:25:06,947 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/output.log
+2024-04-10 14:25:08,489 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: stop_status
+2024-04-10 14:25:08,491 DEBUG   SenderThread:173591 [sender.py:send_request():406] send_request: stop_status
+2024-04-10 14:25:08,949 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/output.log
+2024-04-10 14:25:10,051 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:25:10,951 INFO    Thread-17 :173591 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/bld/HK_RL/RLagents_v3/wandb/run-20240410_142431-3cifwx4x/files/output.log
+2024-04-10 14:25:15,056 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:25:20,057 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:25:25,059 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:25:30,060 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:25:32,180 DEBUG   SystemMonitor:173591 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-04-10 14:25:32,187 DEBUG   SenderThread:173591 [sender.py:send():379] send: stats
+2024-04-10 14:25:35,192 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:25:40,193 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:25:45,194 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:25:50,196 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:25:55,197 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:26:00,199 DEBUG   HandlerThread:173591 [handler.py:handle_request():146] handle_request: status_report
+2024-04-10 14:26:02,194 DEBUG   SenderThread:173591 [sender.py:send():379] send: stats

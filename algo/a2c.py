@@ -68,42 +68,32 @@ class ActorNet(nn.Module):
         
     # def forward(self, observations: torch.Tensor) -> torch.Tensor:
     def forward(self, maps, goal_vector, state=None):
-        # print("observation:", observation)
-        maps = torch.tensor(np.asarray(maps)).float()
-        goal_vector = torch.tensor(np.asarray(goal_vector)).float()
-        print("maps1:", maps)
+        maps = torch.tensor(np.array(maps)).float()
+        goal_vector = torch.tensor(np.array(goal_vector)).float()
 
         if maps.ndim == 3:
             maps = maps.unsqueeze(0)  # 这会在第0维度增加一个维度
         if goal_vector.ndim == 2:
             goal_vector = goal_vector.unsqueeze(0)  # 这会在第0维度增加一个维度
-        print("maps2:", maps)
-        print("mapsshape:", maps.shape)
-        flat = self.cnn(maps.to(self.device))
-        print(2.1)
-        # print('flat:', flat.shape)
-        goal_out = self.goal_layer(goal_vector.to(self.device))
+        
+        flat = self.cnn(maps)
+        goal_out = self.goal_layer(goal_vector)
+        # flat = self.cnn(maps.to(self.device))
+        # goal_out = self.goal_layer(goal_vector.to(self.device))
         hidden_inp = torch.cat([flat.reshape(-1,500), goal_out.reshape(-1,12)], 1)
         hidden_state = self.hnn(hidden_inp)
         hidden_state = self.hrelu(hidden_state+hidden_inp)
-        print(2.2)
-        
         rnn_in = torch.unsqueeze(hidden_state, dim=1)
         step_size = maps.shape[:1]
-        # c_in = torch.zeros((1, 1, 512))
-        # h_in = torch.zeros((1, 1, 512))
-        # state_init = (c_in.to(rnn_in.device), h_in.to(rnn_in.device))
         state_in = state if state is not None else self.get_initial_state(rnn_in.shape)
         # state_init = [x.permute(1,0,2).to(rnn_in.device) for x in state_in]
         lstm_out, lstm_state = self.lstm(rnn_in, state_in)
-        print(2.3)
 
         lstm_c, lstm_h = lstm_state
         # state_out = [lstm_c.squeeze(0), lstm_h.squeeze(0)]
         state_out = [lstm_c.permute(1,0,2), lstm_h.permute(1,0,2)]
         rnn_out = lstm_out.reshape(-1,512)
         self._features = rnn_out
-        print(2.4)
 
         policy_prob = self.policy_layer(rnn_out)
         # policy = self.policy_soft(policy_prob)

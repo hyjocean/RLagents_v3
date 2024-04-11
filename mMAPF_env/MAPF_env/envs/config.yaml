@@ -8,7 +8,7 @@ action:
 num_agents: 2
 observation_size: 10
 DIAGONAL_MOVEMENT: False
-SIZE: (5,5)
+SIZE: (10,20)
 PROB: (0,0.1)
 finished: False
 #above are mapf need

@@ -18,7 +18,7 @@ from od_mstar3.col_set_addition import NoSolutionError, OutOfTimeError
 # import os
 # os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
-
+import sys
 
 from utils.utils import load_config
 Observation = np.ndarray
@@ -93,18 +93,33 @@ class MAPFEnv(AbstractEnv):
         # self._create_agent(num_agents = self.config["num_agents"])
 
     def _create_world(self):
-        a = np.zeros((5,5), dtype=int)
-        goal = np.zeros((5,5),dtype=int)
-        a[0,0]=1
-        a[2,1]=2
-        goal[1,3] = 1
-        goal[3,2] = 2
+        # a = np.zeros((5,5), dtype=int)
+        # goal = np.zeros((5,5),dtype=int)
+        # a[1,1]=-1
+        # a[4,4]=1
+        # a[1,3]=2
+        # goal[4,1] = 1
+        # goal[0,3] = 2
+
+        # a[0,2]=-1
+        # a[3,1]=1
+        # a[4,1]=2
+        # goal[4,4] = 1
+        # goal[2,2] = 2
+
+        # a[0,4],a[1,3],a[2,0],a[3,0]=-1,-1,-1,-1
+        # a[0,0]=1
+        # a[2,1]=2
+        # goal[4,3] = 1
+        # goal[0,1] = 2
+
         # a[1,3]=1
+        # a[0,0]=1
         # a[1,4]=2
         # goal[4,3]=1
         # goal[3,2]=2
-        self.world = setWorld(self.config, world0=a, goals0=goal, blank_world=False)
-        # self.world = setWorld(self.config, world0=None, goals0=None, blank_world=False)
+        # self.world = setWorld(self.config, world0=a, goals0=goal, blank_world=False)
+        self.world = setWorld(self.config, world0=None, goals0=None, blank_world=False)
         self.agents = self.world.agents
 
     def _step(self, action_input, episode=0):
@@ -327,22 +342,22 @@ class MAPFEnv(AbstractEnv):
                 list of length num_agents with each sublist a list of tuples 
                 (observation[0],observation[1],optimal_action,reward)'''
         result = [[] for i in range(self.num_agents)]
+        step = 0
         for t in range(len(path[:-1])):
-            observations = []
             move_queue = list(range(self.num_agents))
-            for agent in range(1, self.num_agents+1):
-                observations.append(self._observe(agent))
-            steps = 0
-
-            poss = [path[t][i] for i in range(self.num_agents)]
-            newPos = [path[t+1][i] for i in range(self.num_agents)]
+            # for agent in range(1, self.num_agents+1):
+                # observations.append(self._observe(agent))
+            observations = [self._observe(agent) for agent in range(1, self.num_agents+1)]
+            step+=1
+            poss,newPos = path[t], path[t+1]
             directions = [(newPos[i][0]-poss[i][0], newPos[i][1]-poss[i][1]) for i in range(self.num_agents)]
             a_s = [self.world.getAction(directions[i]) for i in range(self.num_agents)]
             state, reward, done, nextActions, on_goal, blocking, valid_action = self._step(a_s)
-
-            if not all(valid_action):
-                continue 
             
+            if not all(valid_action):
+                print(f"poss:{poss},newPos:{newPos},valid_action:{valid_action}")
+                print("Invalid action, breaking")
+                continue 
             for i in range(self.num_agents):
                 result[i].append([observations[i], a_s[i]])
             # while len(move_queue) > 0:
