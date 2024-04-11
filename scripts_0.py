@@ -2,7 +2,7 @@ import numpy as np
 import networkx as nx
 import time 
 import copy
-import wandb
+# import wandb
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -27,19 +27,19 @@ from utils.map2nxG import create_graph_from_map2, nx_generate_path
 
 # # 打开交互模式
 # plt.ion()
-wandb.login()
-wandb.init(
-    # set the wandb project where this run will be logged
-    project="RLagents_v3",
+# wandb.login()
+# wandb.init(
+#     # set the wandb project where this run will be logged
+#     project="RLagents_v3",
 
-    # track hyperparameters and run metadata
-    config={
-    "learning_rate": 0.01,
-    "architecture": "CNN",
-    "dataset": "Random-map",
-    "epochs": 1000,
-    }
-)
+#     # track hyperparameters and run metadata
+#     config={
+#     "learning_rate": 0.01,
+#     "architecture": "CNN",
+#     "dataset": "Random-map",
+#     "epochs": 1000,
+#     }
+# )
 
 
 DEFALT_PROB_IMITATION = 0.5
@@ -101,7 +101,7 @@ def train_a2c(env, actor_net, critic_net, epochs=1000, actor_lr=0.01, critic_lr=
                 actor_loss = F.cross_entropy(pre_action[0],torch.tensor(optimal_actions[batch:batch+4]).to(pre_action[0].device))
                 actor_loss.backward()
                 actor_optimizer.step()
-                wandb.log({"actor_loss": actor_loss.detach().item()})
+                # wandb.log({"actor_loss": actor_loss.detach().item()})
 
         else:   
             while not done:
@@ -157,4 +157,4 @@ train_a2c(env, actor_net, critic_net)
 #     thread_pool.release()
 #     thread.join()
 # 训练
-wandb.finish()
+# wandb.finish()

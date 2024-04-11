@@ -1,0 +1,7 @@
+wandb/*
+.gitignore
+*.ipynb_checkpoints
+*.pyc
+*.pyo
+*.pyd
+.vscode/*
