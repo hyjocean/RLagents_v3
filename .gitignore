@@ -4,5 +4,10 @@ wandb/*
 *.pyc
 *.pyo
 *.pyd
-.vscode/*
-*__pycache__/*
+.vscode
+**/__pycache__/
+
+libMultiRobotPlanning/
+od_mstar3/
+lMRP_paths/*
+logs/

@@ -17,6 +17,7 @@ from od_mstar3.col_set_addition import NoSolutionError, OutOfTimeError
 # from gymnasium.envs.registration import register
 # import os
 # os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+from utils.map2nxG import lmrp_generate_path
 
 import sys
 
@@ -89,29 +90,13 @@ class MAPFEnv(AbstractEnv):
         return result
     
     def _reset(self):
+        self.finished = False
         self._create_world()
         # self._create_agent(num_agents = self.config["num_agents"])
 
     def _create_world(self):
-        # a = np.zeros((5,5), dtype=int)
-        # goal = np.zeros((5,5),dtype=int)
-        # a[1,1]=-1
-        # a[4,4]=1
-        # a[1,3]=2
-        # goal[4,1] = 1
-        # goal[0,3] = 2
-
-        # a[0,2]=-1
-        # a[3,1]=1
-        # a[4,1]=2
-        # goal[4,4] = 1
-        # goal[2,2] = 2
-
-        # a[0,4],a[1,3],a[2,0],a[3,0]=-1,-1,-1,-1
-        # a[0,0]=1
-        # a[2,1]=2
-        # goal[4,3] = 1
-        # goal[0,1] = 2
+        # a = np.zeros((10,10), dtype=int)
+        # goal = np.zeros((10,10),dtype=int)
 
         # a[1,3]=1
         # a[0,0]=1
@@ -122,7 +107,7 @@ class MAPFEnv(AbstractEnv):
         self.world = setWorld(self.config, world0=None, goals0=None, blank_world=False)
         self.agents = self.world.agents
 
-    def _step(self, action_input, episode=0):
+    def _step(self, action_input, path_cfg):
         #episode is an optional variable which will be used on the reward discounting
         self.fresh = False
         n_actions = 9 if self.DIAGONAL_MOVEMENT else 5
@@ -155,12 +140,12 @@ class MAPFEnv(AbstractEnv):
         #    -1: out of bounds
         #    -2: collision with wall
         #    -3: collision with robot
-        def reward(index, action, action_status):
+        def reward(index, action, action_status, path_cfg):
             blocking=False
             if action==0:#staying still
                 if action_status == 1:#stayed on goal
                     reward=GOAL_REWARD
-                    x=self.get_blocking_reward(index+1)
+                    x=self.get_blocking_reward(index+1,path_cfg)
                     reward+=x
                     if x<0:
                         blocking=True
@@ -177,13 +162,8 @@ class MAPFEnv(AbstractEnv):
                     reward=ACTION_COST
             return reward, blocking
         
-        r, b = zip(*[reward(index, action, action_status) for index, (action, action_status) in enumerate(zip(action_input, action_statuss))])
-        self.individual_rewards = list(r)
-        self.blocking = list(b)
 
-        # self.individual_rewards[agent_id-1]=reward
-
-        if JOINT:
+        def joint_reward(agent_id):
             visible=[False for i in range(self.num_agents)]
             v=0
             #joint rewards based on proximity
@@ -205,7 +185,16 @@ class MAPFEnv(AbstractEnv):
                 for i in range(self.num_agents):
                     if visible[i]:
                         reward+=self.individual_rewards[i]/(v*2)
+            return reward
+        
+        r, b = zip(*[reward(index, action, action_status, path_cfg) for index, (action, action_status) in enumerate(zip(action_input, action_statuss))])
+        self.individual_rewards = list(r)
+        self.blocking = list(b)
 
+        # self.individual_rewards[agent_id-1]=reward
+        if JOINT:
+            r = [joint_reward(agent_id) for agent_id in range(1,self.num_agents+1)]
+        
         # Perform observation
         state = [self._observe(agent.id_label) for agent in self.agents]
 
@@ -214,29 +203,30 @@ class MAPFEnv(AbstractEnv):
         self.finished |= done
 
         # next valid actions
-        nextActions = [self._listNextValidActions(agent.id_label, action, episode=episode)  for agent,action in zip(self.agents, action_input)]
+        nextActions = [self._listNextValidActions(agent.id_label, action)  for agent,action in zip(self.agents, action_input)]
 
         # on_goal estimation
         # on_goal = self.world.getPos(agent_id) == self.world.getGoal(agent_id)
-        on_goal = [(agent.position == agent.goal) for agent in self.agents]
+        on_goal = [(agent.position == agent.goal).all() for agent in self.agents]
         
         # Unlock mutex
         # self.mutex.release()
         return state, self.individual_rewards, [done], nextActions, on_goal, self.blocking, valid_action
     
-    def astar(self,world,start,goal,robots=[]):
+    def astar(self,world,start,goal,agent_id, path_cfg, robots=[]):
         '''robots is a list of robots to add to the world'''
         for (i,j) in robots:
             world[i,j]=1
         try:
-            path=cpp_mstar.find_path(world,[start],[goal],1,5)
+            path = lmrp_generate_path(world, [start], [goal],[agent_id], path_cfg)
+            # path=cpp_mstar.find_path(world,[start],[goal],1,5)
         except NoSolutionError:
             path=None
         for (i,j) in robots:
             world[i,j]=0
         return path
     
-    def get_blocking_reward(self,agent_id):
+    def get_blocking_reward(self,agent_id, path_cfg):
         '''calculates how many robots the agent is preventing from reaching goal
         and returns the necessary penalty'''
         #accumulate visible robots
@@ -257,11 +247,11 @@ class MAPFEnv(AbstractEnv):
         for agent in other_robots:
             other_locations.remove(tuple(self.world.getPos(agent)))
             #before removing
-            path_before=self.astar(world,self.world.getPos(agent),self.world.getGoal(agent),
-                                   robots=other_locations+[self.world.getPos(agent_id)])
+            path_before=self.astar(world,self.world.getPos(agent),self.world.getGoal(agent),agent_id,
+                                   robots=other_locations+[self.world.getPos(agent_id)], path_cfg=path_cfg)
             #after removing
-            path_after=self.astar(world,self.world.getPos(agent),self.world.getGoal(agent),
-                                   robots=other_locations)
+            path_after=self.astar(world,self.world.getPos(agent),self.world.getGoal(agent),agent_id,
+                                   robots=other_locations,path_cfg=path_cfg)
             other_locations.append(self.world.getPos(agent))
             if (path_before is None and path_after is None):continue
             if (path_before is not None and path_after is None):continue
@@ -334,14 +324,15 @@ class MAPFEnv(AbstractEnv):
                 
         return available_actions
     
-    def parse_path(self, path):
+    def parse_path(self, path, path_cfg):
         '''needed function to take the path generated from M* and create the 
         observations and actions for the agent
         path: the exact path ouput by M*, assuming the correct number of agents
         returns: the list of rollouts for the "episode": 
                 list of length num_agents with each sublist a list of tuples 
                 (observation[0],observation[1],optimal_action,reward)'''
-        result = [[] for i in range(self.num_agents)]
+        valid_flag = 1
+        result = [[] for _ in range(self.num_agents)]
         step = 0
         for t in range(len(path[:-1])):
             move_queue = list(range(self.num_agents))
@@ -352,12 +343,13 @@ class MAPFEnv(AbstractEnv):
             poss,newPos = path[t], path[t+1]
             directions = [(newPos[i][0]-poss[i][0], newPos[i][1]-poss[i][1]) for i in range(self.num_agents)]
             a_s = [self.world.getAction(directions[i]) for i in range(self.num_agents)]
-            state, reward, done, nextActions, on_goal, blocking, valid_action = self._step(a_s)
+            state, reward, done, nextActions, on_goal, blocking, valid_action = self._step(a_s, path_cfg)
             
             if not all(valid_action):
                 print(f"poss:{poss},newPos:{newPos},valid_action:{valid_action}")
                 print("Invalid action, breaking")
-                continue 
+                valid_flag = 0
+                return valid_flag 
             for i in range(self.num_agents):
                 result[i].append([observations[i], a_s[i]])
             # while len(move_queue) > 0:

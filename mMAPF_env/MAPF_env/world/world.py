@@ -308,6 +308,7 @@ class State(object):
             for j in range(self.state.shape[1]):
                 if(self.state[i,j]>0):
                     agents[self.state[i,j]-1].position = np.asarray((i,j))
+                    agents[self.state[i,j]-1].start_pos = np.asarray((i,j))
                     agents[self.state[i,j]-1].last = np.asarray((i,j))
                     # agents[self.state[i,j]-1] = (i,j)
                     agents_last[self.state[i,j]-1] = (i,j)

@@ -48,6 +48,7 @@ class mMAPFEnv(MultiAgentEnv):
         self.num_agents = len(self.agents)
         env_config["map_name"] = map
         self.env_config = env_config
+    
 
     def reset(self):
         original_obs, original_info = self.env.reset()
@@ -57,12 +58,13 @@ class mMAPFEnv(MultiAgentEnv):
             obs[name] = OrderedDict({"maps": np.array(original_obs[i]['maps']), "goal_vector": np.array(original_obs[i]['goal_vector'])})
         return obs
 
-    def step(self, action_dict):
+    def step(self, action_dict, path_cfg):
         action_ls = [action_dict[key] for key in action_dict.keys()]
+
         # print("\n"+"=="*10+"\n")
         # print(self.env.world.state+10*self.env.world.goals)
         # print("\n"+"=="*10+"\n")
-        o, r, d, info = self.env.step(action_ls)
+        o, r, d, info = self.env.step(action_ls, path_cfg)
         rewards = {}
         obs = {}
         infos = {}

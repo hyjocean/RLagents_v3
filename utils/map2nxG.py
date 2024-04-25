@@ -2,6 +2,7 @@ import networkx as nx
 import numpy as np
 import copy
 # 假设 map_grid 是一个二维列表，其中 0 表示空格，1 表示障碍物
+from utils.lMRP import lmrp_find_path
 
 
 def create_graph_from_map(map_grid):
@@ -45,7 +46,6 @@ def create_graph_from_map2(world_state):
 
 
 def nx_generate_path(world_state, agents_pos, agents_goal):
-    print(world_state)
     no_path, blck_path = 1,1
     world_G = create_graph_from_map2(world_state)
     for agent_pos, agent_goal in zip(agents_pos, agents_goal):
@@ -71,6 +71,12 @@ def nx_generate_path(world_state, agents_pos, agents_goal):
         padded_paths.append(path)
     return padded_paths
 
+
+def lmrp_generate_path(world_state, agents_pos, agents_goal,agents_name, path_dict):
+    path = lmrp_find_path(world_state, agents_pos, agents_goal,agents_name, path_dict)
+    # path_0 = list(map(lambda x: tuple(x.tolist()), agents_pos)) # 起始位置
+    # path = [path_0] + path
+    return path
 
 
 if __name__ == "__main__":

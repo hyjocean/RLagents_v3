@@ -5,7 +5,7 @@ episode_limit: 20
 map_generator: maze_generator
 action: 
   type: "EnvAction"
-num_agents: 2
+num_agents: 3
 observation_size: 10
 DIAGONAL_MOVEMENT: False
 SIZE: (10,20)

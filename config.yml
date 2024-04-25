@@ -1,1 +1,14 @@
 gpu_id: 0
+buffer_size: 16
+gamma: .95
+
+max_episode_length: 500
+
+# Path: model.yml
+PATH:
+  ref_path_file: "/home/bld/HK_RL/RLagents_v3/lMRP_paths"
+  cbs_file: "/home/bld/HK_RL/RLagents_v3/libMultiRobotPlanning/build/cbs"
+
+LOG:
+  print_interval: 1
+  log_path: "/home/bld/HK_RL/RLagents_v3/logs/"

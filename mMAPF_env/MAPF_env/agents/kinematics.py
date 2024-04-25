@@ -44,6 +44,7 @@ class Agent(ABC):
         # self.action = {"steering": 0, "acceleration": 0}
         self.world = world
         self.position = position
+        self.start_pos = None
         self.goal = goal 
         self.lats = None
         self.heading = heading
