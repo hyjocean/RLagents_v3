@@ -89,7 +89,7 @@ if __name__ == "__main__":
     ]
 
     # 创建图
-    G = create_graph_from_map2(nmap_grid)
+    G = create_graph_from_map2(map_grid)
     # 使用matplotlib可视化图形
     # import matplotlib.pyplot as plt
 

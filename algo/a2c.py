@@ -157,7 +157,7 @@ class ActorNet(nn.Module):
     #     return list(self.vf_branch.parameters())
 
     def metrics(self):
-        value_loss = torch.sum(train_value * torch.square())
+        # value_loss = torch.sum(train_value * torch.square())
         return {}
         # return {
         #     "policy_loss": self.policy_loss_metric,
