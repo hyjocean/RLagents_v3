@@ -26,12 +26,14 @@ policy_mapping_dict = {
 
 class mMAPFEnv(MultiAgentEnv):
 
-    def __init__(self, env_config):
+    # Initialize env
+    def __init__(self, env_config, args):
         map = env_config["map_name"]
         env_config.pop("map_name", None)
 
-        self.env = REGISTRY[map](**env_config)
+        self.env = REGISTRY[map]({'SIZE': tuple((args.map_size,args.map_size)), 'PROB': tuple((0, args.map_density)), 'observation_size': args.observation_size}, args.render_mode)
         # assume all agent same action/obs space
+        self.configure(self.env.config, args)
         self.action_space = self.env.action_space[0]
         self.observation_space = GymDict(OrderedDict(
                 maps=Box(-np.inf, np.inf,
@@ -49,6 +51,8 @@ class mMAPFEnv(MultiAgentEnv):
         env_config["map_name"] = map
         self.env_config = env_config
     
+    def configure(self, config: dict, args) -> None:
+        self.env.config.update({'SIZE': tuple((args.map_size, args.map_size)), 'PROB': tuple((0, args.map_density))})
 
     def reset(self):
         original_obs, original_info = self.env.reset()
@@ -56,6 +60,8 @@ class mMAPFEnv(MultiAgentEnv):
         for i, agent in enumerate(self.agents):
             name = f'agent_f{agent.id_label}'
             obs[name] = OrderedDict({"maps": np.array(original_obs[i]['maps']), "goal_vector": np.array(original_obs[i]['goal_vector'])})
+        
+        self.last_obs = obs
         return obs
 
     def step(self, action_dict, path_cfg):
@@ -72,13 +78,19 @@ class mMAPFEnv(MultiAgentEnv):
             rewards[key] = r[i]
             obs[key] = OrderedDict({"maps": np.array(o[i]['maps']), "goal_vector": np.array(o[i]['goal_vector'])})
             infos[key] = OrderedDict({'done':info['done'], 'nextActions': np.array(info['nextActions'][i]), 'on_goal': np.array(info['on_goal'][i]), 'blocking': info['blocking'][i], 'valid_action': info['valid_action'][i]})
+            # if action_dict[key] not in self.goal_act(self.last_obs[key]['goal_vector']):
+            #     rewards[key] -= 0.2
+            # if obs[key]["goal_vector"][0][-1] > self.last_obs[key]['goal_vector'][0][-1]:
+            #     rewards[key] -= 0.2
             # {
             #     "obs": np.array(o[i])
             # }
         # dones = {"__all__": True if sum(d) == self.num_agents else False}
         dones = {"__all__": info['done'][0]}
+        
         # print(rewards)
-        return obs, rewards, dones, infos
+        self.last_obs = obs
+        return obs, rewards, info['done'], infos
 
     def close(self):
         self.env.close()
@@ -103,7 +115,32 @@ class mMAPFEnv(MultiAgentEnv):
         }
         return env_info
     
-    
+    def goal_act(self, goal_vector):
+        # goal_vector: [x, y, dis]
+        # 0: idle
+        # 1: right
+        # 2: down
+        # 3: left
+        # 4: up
+        dx,dy,mag = goal_vector[0]
+        if dx > 0 and dy > 0:
+            return [1,2]
+        elif dx > 0 and dy == 0:
+            return [2]
+        elif dx > 0 and dy < 0:
+            return [2,3]
+        elif dx == 0 and dy > 0:
+            return [1]
+        elif dx == 0 and dy == 0:
+            return [0]
+        elif dx == 0 and dy < 0:
+            return [3]
+        elif dx < 0 and dy > 0:
+            return [1,4]
+        elif dx < 0 and dy == 0:
+            return [4]
+        elif dx < 0 and dy < 0:
+            return [3,4]
 # if __name__ == '__main__':
 #     # register new env
 #     ENV_REGISTRY["mMAPF"] = mMAPFEnv

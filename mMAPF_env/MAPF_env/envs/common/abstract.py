@@ -43,7 +43,7 @@ class AbstractEnv(gym.Env):
     PERCEPTION_DISTANCE = 5.0 * Agent.MAX_SPEED
     """The maximum distance of any vehicle present in the observation [m]"""
 
-    def __init__(self, config: dict=None, world0=None, goals0=None, render_mode="rgb_array", blank_world=False):
+    def __init__(self, config: dict=None, world0=None, goals0=None, render_mode="human", blank_world=False):
         """
         Args:
             DIAGONAL_MOVEMENT: if the agents are allowed to move diagonally
@@ -221,11 +221,11 @@ class AbstractEnv(gym.Env):
         # Second, to link the obs and actions to the vehicles once the scene is created
         self.define_spaces()
         
-        obs = self.observation_type.observe() #TODO: obs应该是一个长为n_agent的list，每个元素为每个agent的观测
-        info = self._info(obs, action=self.action_space.sample())
+        # obs = self.observation_type.observe() #TODO: obs应该是一个长为n_agent的list，每个元素为每个agent的观测
+        # info = self._info(obs, action=self.action_space.sample())
         if self.render_mode == 'human':
             self.render()
-        return obs, info
+        # return obs, info
 
     def _reset(self) -> None:
         """

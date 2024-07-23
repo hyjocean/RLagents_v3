@@ -24,7 +24,7 @@ import sys
 from utils.utils import load_config
 Observation = np.ndarray
 
-ACTION_COST, IDLE_COST, GOAL_REWARD, COLLISION_REWARD,FINISH_REWARD,BLOCKING_COST = -0.3, -.5, 5.0, -2.,20.,-1.
+ACTION_COST, IDLE_COST, GOAL_REWARD, COLLISION_REWARD, FINISH_REWARD, BLOCKING_COST = -0.1, -0.3, 100, -2., 2000.,-1.
 opposite_actions = {0: -1, 1: 3, 2: 4, 3: 1, 4: 2, 5: 7, 6: 8, 7: 5, 8: 6}
 JOINT = False # True for joint estimation of rewards for closeby agents
 dirDict = {0:(0,0),1:(0,1),2:(1,0),3:(0,-1),4:(-1,0),5:(1,1),6:(1,-1),7:(-1,-1),8:(-1,1)}
@@ -32,6 +32,10 @@ actionDict={v:k for k,v in dirDict.items()}
 
 
 class MAPFEnv(AbstractEnv):
+
+    def __init__(self, config: Dict = None, render_mode="human"):
+        super().__init__(config=config, render_mode=render_mode)
+        
 
     def getFinishReward(self):
         return FINISH_REWARD
@@ -95,14 +99,39 @@ class MAPFEnv(AbstractEnv):
         # self._create_agent(num_agents = self.config["num_agents"])
 
     def _create_world(self):
-        # a = np.zeros((10,10), dtype=int)
-        # goal = np.zeros((10,10),dtype=int)
+        # a = np.zeros((40,40), dtype=int)
+        # goal = np.zeros((40,40),dtype=int)
+        # x = [1,2,2,3,4,4,5,5,6,7,7,7,8,8,9,9,9,10,10,12,12,12,12,14,14,15,16,16,17,17,18,18,18,19,19]
+        # y = [0,5,12,15,5,18,4,18,0,2,8,13,8,10,2,5,18,10,11,4,5,7,13,1,17,3,3,11,14,18,5,8,15,7,17]
+        # for x_,y_ in zip(x,y):
+        #     a[x_,y_] = -1
+        # a[3,5]=1
+        # goal[8,0]=1
+        # a=np.zeros((10,10),dtype=int)
+        # goal=np.zeros((10,10),dtype=int)
+        # a[19,18]=1
+        # goal[12,11]=1
+        # if not hasattr(self, 'obstacle_x'):
+        #     self.obstacle_x = np.random.randint(0,20, int(0.1*20*20))
+        #     self.obstacle_y = np.random.randint(0,20, int(0.1*20*20))
+        # for x_,y_ in zip(self.obstacle_x,self.obstacle_y):
+        #     if a[x_,y_] == 0:
+        #         a[x_,y_] = -1
+        
+        # a[7,8]=1
+        # goal[15,37]=1
+        
+        
+        # x = [ 8, 14,  6,  1, 19, 19, 19,  1,  0,  1,  5, 15, 16, 10,  9,  0,  7, 1,  2,  3, 13,  7, 14,  0,  7]
+        # y = [ 3,  8, 10,  5, 17,  2, 13, 15, 10, 19, 16,  9,  9, 19, 13, 14,  6, 18,  9, 19,  6,  2,  1, 10, 19]
+        # for x_,y_ in zip(x,y):
+        #     a[x_,y_] = -1
 
-        # a[1,3]=1
-        # a[0,0]=1
-        # a[1,4]=2
-        # goal[4,3]=1
-        # goal[3,2]=2
+        # goal[3,3]=2
+        # goal[9,4]=3
+        # a[7,9]=1
+        # a[3,9]=2
+        # a[8,9]=3
         # self.world = setWorld(self.config, world0=a, goals0=goal, blank_world=False)
         self.world = setWorld(self.config, world0=None, goals0=None, blank_world=False)
         self.agents = self.world.agents
@@ -200,7 +229,8 @@ class MAPFEnv(AbstractEnv):
 
         # Done?
         done = self.world.done()
-        self.finished |= done
+        # self.finished |= done
+        self.finished = False
 
         # next valid actions
         nextActions = [self._listNextValidActions(agent.id_label, action)  for agent,action in zip(self.agents, action_input)]
@@ -209,6 +239,8 @@ class MAPFEnv(AbstractEnv):
         # on_goal = self.world.getPos(agent_id) == self.world.getGoal(agent_id)
         on_goal = [(agent.position == agent.goal).all() for agent in self.agents]
         
+        if self.finished:
+            r = [f + FINISH_REWARD for f in r]
         # Unlock mutex
         # self.mutex.release()
         return state, self.individual_rewards, [done], nextActions, on_goal, self.blocking, valid_action
@@ -374,7 +406,38 @@ class MAPFEnv(AbstractEnv):
             #     result[i].append([o['maps'], o['goal_vector'], a])
         return result
 
-    
+    def reset(self,
+              *,
+              seed = None,
+              options = None,
+              ):
+        """
+        Reset the environment to it's initial configuration
+
+        :param seed: The seed that is used to initialize the environment's PRNG
+        :param options: Allows the environment configuration to specified through `options["config"]`
+        :return: the observation of the reset state
+        """
+        super().reset()
+        # if options and "config" in options:
+        #     self.configure(options["config"])
+        # self.viewer = None
+        # self.update_metadata()
+        # # First, to set the controlled vehicle class depending on action space
+        # self.define_spaces()
+        # self.time = self.steps = 0
+        # self.done = False
+        # self._reset()
+        # # Second, to link the obs and actions to the vehicles once the scene is created
+        # self.define_spaces()
+        
+        obs = [self._observe(agent) for agent in range(1, self.num_agents+1)] #TODO: obs应该是一个长为n_agent的list，每个元素为每个agent的观测
+        info = self._info(obs, action=self.action_space.sample())
+        if self.render_mode == 'human':
+            self.render()
+        return obs, info
+
+
     # Returns an observation of an agent
     def _observe(self,agent_id):
         assert(agent_id>0)

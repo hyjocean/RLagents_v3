@@ -5,10 +5,10 @@ episode_limit: 20
 map_generator: maze_generator
 action: 
   type: "EnvAction"
-num_agents: 3
+num_agents: 1
 observation_size: 10
 DIAGONAL_MOVEMENT: False
-SIZE: (10,20)
+SIZE: (10,10)
 PROB: (0,0.1)
 finished: False
 #above are mapf need

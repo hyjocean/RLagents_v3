@@ -11,3 +11,5 @@ libMultiRobotPlanning/
 od_mstar3/
 lMRP_paths/*
 logs/
+records/
+params/
