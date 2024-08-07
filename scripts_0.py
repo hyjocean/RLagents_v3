@@ -25,9 +25,6 @@ from pathlib import Path
 import logging
 
 
-
-
-
 def cpp_generate_path(world_state, agents_pos, agents_goal):
     world_state[world_state>0] =0
     world_state[world_state<0] =1
@@ -164,7 +161,7 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
             agents_num = len(agents_list)
             
             if epoch % config['LOG']['print_interval'] == 0:
-                print(f"Epoch: {epoch}, imi loss: {actor_loss.detach().cpu().numpy()}")
+                logger.info(f"Epoch: {epoch}, imi loss: {actor_loss.detach().cpu().numpy()}")
                 wandb.log({"imi_loss": actor_loss.detach().item()})
             actor_scheduler.step(epoch+1, 0)
 
@@ -185,8 +182,8 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
             agents_pos = [agent.position for agent in env.agents]
             agents_goal = [agent.goal for agent in env.agents]
             agents_name = [agents.id_label for agents in env.agents]
-            padded_paths = lmrp_generate_path(world_state, agents_pos, agents_goal, agents_name, config['PATH']) 
-            optimal_steps = len(padded_paths) - 1
+            # padded_paths = lmrp_generate_path(world_state, agents_pos, agents_goal, agents_name, config['PATH']) 
+            # optimal_steps = len(padded_paths) - 1
             while not env.env.finished:
                 
                 pos_x,pos_y = env.agents[0].position
@@ -305,12 +302,12 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
                                         + (1-on_goal.unsqueeze(-1).to(config['device']))*torch.log(torch.clamp(1-on_gl,1e-10,1.0))
                     on_goal_loss = - on_goal_loss.sum(-1).mean(-1)
 
-                    if (epoch+1) % 100 == 0:
-                        config['entr_alpha'] = config['entr_alpha'] / 2
+                    # if (epoch+1) % 20000 == 0:
+                    #     config['entr_alpha'] = config['entr_alpha'] / 2
                     # print('policy_loss:', policy_loss.mean().item(), 'value_loss:', value_loss.mean().item(), 'valid_loss:', valid_loss.mean().item(), 'entropy:', entropy.mean().item(), 'blocking_loss:', blocking_loss.mean().item())
                     # loss =  0.5 * value_loss + policy_loss + 0.5*valid_loss \
                     #         - config['entr_alpha']*entropy  + 0.5*blocking_loss
-                    loss = 0.1*value_loss + policy_loss - config['entr_alpha']*entropy
+                    loss = 0.5*value_loss + policy_loss - config['entr_alpha']*entropy
                     # loss = policy_loss - config['entr_alpha']*entropy
 
                     actor_optimizer.zero_grad()
@@ -325,8 +322,8 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
                     if epoch % config['LOG']['print_interval'] == 0:
                         # logger.info(f"Epoch: {epoch}, episode: {episode_step_count}, rl loss: {loss.detach().cpu().numpy()} \t mean: {loss.mean().item()} \t \
                         #        value_loss: {value_loss.mean().item()} \t policy_loss: {policy_loss.mean().item()} \t entropy: {entropy.mean().item()} \t")
-                        logger.info(f"Epoch: {epoch}, \t episode: {episode_step_count}, \t rl loss: {loss.detach().cpu().numpy()} \t mean: {loss.mean().item():.4f} \t"
-                                    f"value_loss: {value_loss.mean().item():.4f} \t policy_loss: {policy_loss.mean().item():.4f} \t entropy: {entropy.mean().item():.4f} \t optimal_steps: {optimal_steps}")
+                        logger.info(f"Epoch: {epoch}, \t episode: {episode_step_count}, \t episode_reward: {episode_reward} \t rl loss: {loss.detach().cpu().numpy()} \t mean: {loss.mean().item():.4f} \t"
+                                    f"value_loss: {value_loss.mean().item():.4f} \t policy_loss: {policy_loss.mean().item():.4f} \t entropy: {entropy.mean().item():.4f}")
                         wandb.log({"rl_loss": loss.mean().item()})
                         wandb.log({"value_loss": value_loss.mean().item()})
                         wandb.log({"policy_loss": policy_loss.mean().item()})
@@ -342,8 +339,8 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
                 
                 if episode_step_count >= config["max_episode_length"] or step_d[0]:
                     
-                    wandb.log({"episode_step_count / optimal_steps": episode_step_count / (optimal_steps+1e-8)})
-                    wandb.log({"episode_reward": episode_reward})
+                    # wandb.log({"episode_step_count / optimal_steps": episode_step_count / (optimal_steps+1e-8)})
+                    wandb.log({"episode_reward": episode_reward, 'epoch': epoch})
                     # reward_history.append(episode_reward)
                     # if len(reward_history) % 100 == 0:
                     #     sma = np.convolve(reward_history, np.ones(50)/50, mode='valid')
@@ -357,12 +354,13 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
                             logger.debug(f"world map: \n {env.env.world.state}\n")
                             for agent in env.agents:
                                 logger.debug(f"\tagent_name: {agent.id_label}, \tagent_st_pos: {agent.start_pos}, \t agent_goal: {agent.goal}")
-                            logger.debug(f"episode_step_count / optimal_steps: {episode_step_count / (optimal_steps+1e-8)}")
+                                logger.debug(f"obsacle: {np.where(env.env.world.state == -1)}")
+                            # logger.debug(f"episode_step_count / optimal_steps: {episode_step_count / (optimal_steps+1e-8)}")
                             # logger.debug("\n\n")
-                            if episode_step_count / (optimal_steps+1e-8) <= config["episode_step_count"]:
-                                config["episode_step_count"] = episode_step_count / (optimal_steps+1e-8)
+                            if episode_reward >= config["max_episode_reward"] and epoch >= 20_000:
+                                config["max_episode_reward"] = episode_reward
                                 torch.save(actor_net, config['SAVE']['model'])
-                                logger.debug(f"\n\n======Save model parameters with current min episode_step_count/optimal_steps {episode_step_count / (optimal_steps+1e-8)} in {config['SAVE']['model']}======\n\n")
+                                logger.debug(f"\n\n======Save model parameters with current max_episode_reward {episode_reward} in {config['SAVE']['model']} with logfile {config['LOG']['log_path']}======\n\n")
 
                         env.env.finished = True
                     else:
@@ -371,7 +369,7 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
                         break
 
 def wandb_set(args,config):
-    notes = f'map_size: {args.map_size}x{args.map_size}, map_density: {args.map_density}, imi_prob: {args.imi_prob}'
+    notes = f"map_size: {args.map_size}x{args.map_size}, map_density: {args.map_density}, imi_prob: {args.imi_prob}, seed: {config['SEED']}"
     mode = 'disabled' if not args.wandb_log else 'online'
     wandb.login()
     wandb.init(
@@ -399,7 +397,7 @@ def config_loading(args, config_file):
     file_path = Path(__file__).parent
 
     config['PATH']['path_id'] = f"path_{current_time}"
-    config['LOG']['log_path'] = Path(f"{file_path}/logs/log_{current_time}.log")
+    config['LOG']['log_path'] = Path(f"{file_path}/logs/log_{current_time}_{seed}.log")
     logger = configure_logger(config['LOG']['log_path'])
     # logger = logging.getLogger()
     config['LOG']['logger'] = logger
@@ -408,14 +406,14 @@ def config_loading(args, config_file):
     logger.info(f"CONFIG: {config}")
 
     config.update({'DEFALT_PROB_IMITATION': args.imi_prob})
-    config['SAVE']['model'] = f"params/model_params_{args.map_size}_obstacle_{args.map_density}_imiprob_{args.imi_prob}_{config['SEED']}.pth"
+    config['SAVE']['model'] = f"params/model_params_{args.map_size}_obstacle_{args.map_density}_imiprob_{args.imi_prob}_{config['SEED']}_4vis.pth"
     return config
     
 def main():
     parser = argparse.ArgumentParser(description='Train A2C on MAPF')
     parser.add_argument('--gpu_id', type=int, default=0, help='gpu id')
-    parser.add_argument('--map_size', type=int, default=20, help='map size')
-    parser.add_argument('--map_density', type=float, default=0.01, help='obstacke density of map')
+    parser.add_argument('--map_size', type=int, default=10, help='map size')
+    parser.add_argument('--map_density', type=float, default=0.1, help='obstacke density of map')
     parser.add_argument('--imi_prob', type=float, default=0.2, help='imitation probability')
     parser.add_argument('--wandb_log', action='store_true', help='log to wandb')
     parser.add_argument('--observation_size', type=int, default=10, help='the range of observation')
@@ -425,23 +423,34 @@ def main():
     args = parser.parse_args()
 
 
-    config = config_loading(args, args.config_file)
-    if args.render_mode:
-        args.render_mode = 'rgb_array'
-    else:
-        args.render_mode = 'human'
-    # 创建网络和环境
-    env = mMAPFEnv({'map_name':'mMAPF'}, args)
+    try:
+        config = config_loading(args, args.config_file)
+        logger = config['LOG']['logger']
+        if args.render_mode:
+            args.render_mode = 'rgb_array'
+        else:
+            args.render_mode = 'human'
 
 
-    wandb_set(args,config.copy().update(env.env.config))
-    actor_net = ActorNet(env.observation_space, env.action_space, config).to(config['device'])
-    critic_net = CriticNet().to(config['device'])
-    # actor_net = ActorNet(env.observation_space, env.action_space, config)
-    # critic_net = CriticNet()
-    train_a2c(env, actor_net, critic_net, config)
-    # 训练
-    wandb.finish()
+        print('render_mode: ', args.render_mode)
+        # 创建网络和环境
+        env = mMAPFEnv({'map_name':'mMAPF'}, args)
+
+        config1 = config.copy()
+        config1.update(env.env.config)
+        wandb_set(args,config1)
+        actor_net = ActorNet(env.observation_space, env.action_space, config).to(config['device'])
+        critic_net = CriticNet().to(config['device'])
+        # actor_net = ActorNet(env.observation_space, env.action_space, config)
+        # critic_net = CriticNet()
+        train_a2c(env, actor_net, critic_net, config)
+
+    except BrokenPipeError as e:
+        logger.error(f"BrokenPipeError: {e}")
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")
+    finally:
+        wandb.finish()
 
 if __name__ == '__main__':
     main()

@@ -24,7 +24,7 @@ import sys
 from utils.utils import load_config
 Observation = np.ndarray
 
-ACTION_COST, IDLE_COST, GOAL_REWARD, COLLISION_REWARD, FINISH_REWARD, BLOCKING_COST = -0.1, -0.3, 100, -2., 2000.,-1.
+# ACTION_COST, IDLE_COST, GOAL_REWARD, COLLISION_REWARD, FINISH_REWARD, BLOCKING_COST = -0.1, -0.3, 100, -2., 2000.,-1.
 opposite_actions = {0: -1, 1: 3, 2: 4, 3: 1, 4: 2, 5: 7, 6: 8, 7: 5, 8: 6}
 JOINT = False # True for joint estimation of rewards for closeby agents
 dirDict = {0:(0,0),1:(0,1),2:(1,0),3:(0,-1),4:(-1,0),5:(1,1),6:(1,-1),7:(-1,-1),8:(-1,1)}
@@ -38,7 +38,7 @@ class MAPFEnv(AbstractEnv):
         
 
     def getFinishReward(self):
-        return FINISH_REWARD
+        return self.config['REWARD']['FINISH_REWARD']
     
     @classmethod
     def default_config(cls) -> dict:
@@ -173,22 +173,22 @@ class MAPFEnv(AbstractEnv):
             blocking=False
             if action==0:#staying still
                 if action_status == 1:#stayed on goal
-                    reward=GOAL_REWARD
+                    reward=self.config['REWARD']['GOAL_REWARD']
                     x=self.get_blocking_reward(index+1,path_cfg)
                     reward+=x
                     if x<0:
                         blocking=True
                 elif action_status == 0:#stayed off goal
-                    reward=IDLE_COST
+                    reward=self.config['REWARD']['IDLE_COST']
             else:#moving
                 if (action_status == 1): # reached goal
-                    reward = GOAL_REWARD
+                    reward = self.config['REWARD']['GOAL_REWARD']
                 elif (action_status == -3 or action_status==-2 or action_status==-1): # collision
-                    reward = COLLISION_REWARD
+                    reward = self.config['REWARD']['COLLISION_REWARD']
                 elif (action_status == 2): #left goal
-                    reward=ACTION_COST
+                    reward=self.config['REWARD']['ACTION_COST']
                 else:
-                    reward=ACTION_COST
+                    reward=self.config['REWARD']['ACTION_COST']
             return reward, blocking
         
 
@@ -240,7 +240,7 @@ class MAPFEnv(AbstractEnv):
         on_goal = [(agent.position == agent.goal).all() for agent in self.agents]
         
         if self.finished:
-            r = [f + FINISH_REWARD for f in r]
+            r = [f + self.config['REWARD']['FINISH_REWARD'] for f in r]
         # Unlock mutex
         # self.mutex.release()
         return state, self.individual_rewards, [done], nextActions, on_goal, self.blocking, valid_action
@@ -290,7 +290,7 @@ class MAPFEnv(AbstractEnv):
             if (path_before is None and path_after is not None)\
                 or len(path_before)>len(path_after)+inflation:
                 num_blocking+=1
-        return num_blocking*BLOCKING_COST
+        return num_blocking*self.config['REWARD']['BLOCKING_COST']
     
     def _create_agent(self, num_agents):
         agents  = []

@@ -28,10 +28,15 @@ high_speed_reward: 0.4
 reward_speed_range: [20, 30]
 normalize_reward: True
 offroad_terminal: False
-ACTION_COST: -0.3
-GOAL_REWARD: 5.
-COLLISION_REWARD: -2
 frozen_steps: 0
 isOneShot: False
 IsDiagonal: False
 viewer: 
+
+REWARD:
+  ACTION_COST: -0.1
+  IDLE_COST: -0.3
+  GOAL_REWARD: 100.
+  COLLISION_REWARD: -2
+  FINISH_REWARD: 1000
+  BLOCKING_COST: -1

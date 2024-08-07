@@ -112,10 +112,10 @@ def config_loading(args, config_file):
     
 def main():
     parser = argparse.ArgumentParser(description='Train A2C on MAPF')
-    parser.add_argument('--gpu_id', type=int, default=1, help='gpu id')
-    parser.add_argument('--map_size', type=int, default=40, help='map size')
-    parser.add_argument('--map_density', type=float, default=0.01, help='obstacke density of map')
-    parser.add_argument('--imi_prob', type=float, default=0.5, help='imitation probability')
+    parser.add_argument('--gpu_id', type=int, default=0, help='gpu id')
+    parser.add_argument('--map_size', type=int, default=20, help='map size')
+    parser.add_argument('--map_density', type=float, default=0.1, help='obstacke density of map')
+    parser.add_argument('--imi_prob', type=float, default=0.2, help='imitation probability')
     parser.add_argument('--wandb_log', action='store_true', help='log to wandb')
     parser.add_argument('--observation_size', type=int, default=10, help='the range of observation')
     parser.add_argument('--render_mode', type=str, default='human', help='rgb_array or human')
@@ -136,7 +136,7 @@ def main():
 
 
     # wandb_set(args,config.copy().update(env.env.config))
-    actor_net = torch.load(f"params/model_params_40_obstacle_0.01_imiprob_0.5_476.pth").to(config['device'])
+    actor_net = torch.load(f"params/model_params_20_obstacle_0.1_imiprob_0.2_1883.pth").to(config['device'])
     critic_net = CriticNet().to(config['device'])
     current_time = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
     config['PATH']['path_id'] = f"tst_path_{current_time}"

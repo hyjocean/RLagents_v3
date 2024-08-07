@@ -1,4 +1,4 @@
-SEED: 476
+SEED: 1510
 DEFALT_PROB_IMITATION: 0.2
 EXPERIENCE_BUFFER_SIZE: 1000
 
@@ -19,21 +19,21 @@ LOG:
 batch_items: 32
 
 
-entr_alpha: 10.0
-episode_step_count: 1_000_000
+entr_alpha: 0.01
+max_episode_reward: 0
 
 optimal:
   opt: 'adam' 
   lr : 0.0001 
   weight_decay : 0 
   momentum : 0.9 
-  epochs : 5_000_000_000
+  epochs : 1_000_000
   sched : 'cosine' 
   min_lr : 0.000001
   warmup_lr : 0.005 
-  warmup_epochs : 20 
-  cooldown_epochs : 50
-  decay_epochs : [500, 1000, 2000, 5000]
+  warmup_epochs : 200 
+  cooldown_epochs : 500
+  decay_epochs : [200, 500, 1000, 5000, 10_000, 20_000, 50_000, 100_000, 200_000, 500_000, 1_000_000]
   decay_rate : 0.5
 
 SAVE:

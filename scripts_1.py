@@ -3,6 +3,11 @@ import networkx as nx
 import time 
 import copy
 import wandb
+import argparse
+import ray
+from ray.tune.registry import register_env
+from ray.rllib.algorithms.ppo import PPOConfig
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -24,20 +29,7 @@ from pathlib import Path
 import logging
 
 
-wandb.login()
-wandb.init(
-    # set the wandb project where this run will be logged
-    project="RLagents_v3",
-    notes="differ env-single agents in 10x10 map",
-    # track hyperparameters and run metadata
-    config={
-    "learning_rate": 0.01,
-    "architecture": "CNN",
-    "dataset": "Random-map",
-    "epochs": 1000,
-    },
-    mode="disabled",
-)
+
 
 
 def cpp_generate_path(world_state, agents_pos, agents_goal):
@@ -56,11 +48,13 @@ def cpp_generate_path(world_state, agents_pos, agents_goal):
         padded_paths.append(path)
     return padded_paths
             
-def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.001, critic_lr=0.01, imi_epoch = 100):
+def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.001, critic_lr=0.01, imi_epoch = 10):
 
-    DEFALT_PROB_IMITATION  = config['DEFALT_PROB_IMITATION']
+    logger = config['LOG']['logger']
+    
+    DEFALT_PROB_IMITATION = config['DEFALT_PROB_IMITATION']
     EXPERIENCE_BUFFER_SIZE = config['EXPERIENCE_BUFFER_SIZE']
-    NUM_BUFFERS            = 1
+    NUM_BUFFERS = 1
     
     actor_optimizer = create_optimizer_v2(actor_net, **optimizer_kwargs(SimpleNamespace(**config['optimal'])))
     actor_scheduler, num_epochs = create_scheduler(SimpleNamespace(**config['optimal']), actor_optimizer)
@@ -70,11 +64,12 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
 
     episode_buffers, s1Values = [[] for _ in range(1)], [[] for _ in range(1)]
     total_steps, i_buf = 0, 0
-    config['env_map_shape']    = env.observation_space['maps'].shape
-    config['env_goal_shape']   = env.observation_space['goal_vector'].shape
+    config['env_map_shape'] = env.observation_space['maps'].shape
+    config['env_goal_shape'] = env.observation_space['goal_vector'].shape
     config['env_action_shape'] = env.action_space.n
     
     env.reset()
+    reward_history = []
     record_table = np.zeros(shape=env.env.world.state.shape)
     for epoch in range(num_epochs):
         state = env.reset()
@@ -130,7 +125,6 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
         #             print(f"Epoch: {epoch}, episode: {batch}, imi loss: {actor_loss.detach().cpu().numpy()}")
         #             wandb.log({"imi_loss": actor_loss.detach().item()})
         #     actor_scheduler.step(epoch+1, 0)
-
         # new
         if epoch < imi_epoch or np.random.rand() < DEFALT_PROB_IMITATION:
             obses, optimal_actions = {'maps':[],'goal_vector':[]}, []
@@ -150,14 +144,14 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
                 obses['maps'].append(state['maps'])
                 obses['goal_vector'].append(state['goal_vector'])
                 a_list = [0, 0, 0, 0, 0]
-                if state['goal_vector'][0][0]>0: 
-                    a_list[2] += 1
-                if state['goal_vector'][0][0]<0: 
-                    a_list[4] += 1
-                if state['goal_vector'][0][1]>0: 
-                    a_list[1] += 1
-                if state['goal_vector'][0][1]<0: 
-                    a_list[3] += 1
+                if state['goal_vector'][0][0]>0:
+                    a_list[2]+=1
+                if state['goal_vector'][0][0]<0:
+                    a_list[4]+=1
+                if state['goal_vector'][0][1]>0:
+                    a_list[1]+=1
+                if state['goal_vector'][0][1]<0:
+                    a_list[3]+=1
                 # if state['goal_vector'][0][2] == 0:
                 #     a_list[0]+=1
 
@@ -191,13 +185,14 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
             wrong_on_goal = np.array([0]*env.num_agents)
 
 
-            world_state   = env.env.world.state.copy()
-            agents_pos    = [agent.position for agent in env.agents]
-            agents_goal   = [agent.goal for agent in env.agents]
-            agents_name   = [agents.id_label for agents in env.agents]
-            padded_paths  = lmrp_generate_path(world_state, agents_pos, agents_goal, agents_name, config['PATH'])
+            world_state = env.env.world.state.copy()
+            agents_pos = [agent.position for agent in env.agents]
+            agents_goal = [agent.goal for agent in env.agents]
+            agents_name = [agents.id_label for agents in env.agents]
+            padded_paths = lmrp_generate_path(world_state, agents_pos, agents_goal, agents_name, config['PATH']) 
             optimal_steps = len(padded_paths) - 1
             while not env.env.finished:
+                
                 pos_x,pos_y = env.agents[0].position
                 record_table[pos_x][pos_y] += 1
                 np.savetxt('records/my_array.csv', record_table, fmt='%d',delimiter=',')
@@ -296,12 +291,12 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
                     
                     action_onehot = np.eye(config['env_action_shape'])[np.stack(actions).T]
                     responsible_out = torch.sum(p_l*torch.tensor(action_onehot).to(config['device']), axis = 2)
-                    policy_loss = - torch.log(torch.clamp(responsible_out,min=1e-15, max=1.0)) * ( torch.tensor(np.stack(advantages))).to(device)
+                    policy_loss = - torch.log(torch.clamp(responsible_out,min=1e-15, max=1.0)) * ( torch.tensor(np.stack(advantages))).to(config['device'])
                     policy_loss = policy_loss.mean(-1)
                     # policy_loss = - torch.sum(torch.log(torch.clamp(responsible_out,min=1e-15, max=1.0)) * advantages)
 
-                    valid_loss = torch.log(torch.clamp(valids_l,1e-10,1.0)) * torch.tensor(np.stack(valids)).squeeze(2).permute(1,0,2).to(device)\
-                                 + torch.log(torch.clamp(1-valids_l,1e-10,1.0)) * (1-torch.tensor(np.stack(valids)).squeeze(2).permute(1,0,2)).to(device)
+                    valid_loss = torch.log(torch.clamp(valids_l,1e-10,1.0)) * torch.tensor(np.stack(valids)).squeeze(2).permute(1,0,2).to(config['device'])\
+                                 + torch.log(torch.clamp(1-valids_l,1e-10,1.0)) * (1-torch.tensor(np.stack(valids)).squeeze(2).permute(1,0,2)).to(config['device'])
                     valid_loss = - valid_loss.sum(-1).mean(-1)
 
                     blockings = torch.stack(blockings).squeeze(-1).permute(1,0,2)
@@ -310,12 +305,12 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
                     blocking_loss = - blocking_loss.sum(-1).mean(-1)
 
                     on_goal = torch.tensor(np.stack(on_goal)).T
-                    on_goal_loss = on_goal.unsqueeze(-1).to(device)*torch.log(torch.clamp(on_gl,1e-10,1.0)) \
-                                        + (1-on_goal.unsqueeze(-1).to(device))*torch.log(torch.clamp(1-on_gl,1e-10,1.0))
+                    on_goal_loss = on_goal.unsqueeze(-1).to(config['device'])*torch.log(torch.clamp(on_gl,1e-10,1.0)) \
+                                        + (1-on_goal.unsqueeze(-1).to(config['device']))*torch.log(torch.clamp(1-on_gl,1e-10,1.0))
                     on_goal_loss = - on_goal_loss.sum(-1).mean(-1)
 
-                    # if (epoch+1) % 100 == 0:
-                    #     config['entr_alpha'] = config['entr_alpha'] / 2
+                    if (epoch+1) % 100 == 0:
+                        config['entr_alpha'] = config['entr_alpha'] / 2
                     # print('policy_loss:', policy_loss.mean().item(), 'value_loss:', value_loss.mean().item(), 'valid_loss:', valid_loss.mean().item(), 'entropy:', entropy.mean().item(), 'blocking_loss:', blocking_loss.mean().item())
                     # loss =  0.5 * value_loss + policy_loss + 0.5*valid_loss \
                     #         - config['entr_alpha']*entropy  + 0.5*blocking_loss
@@ -350,7 +345,13 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
 
                 
                 if episode_step_count >= config["max_episode_length"] or step_d[0]:
+                    
                     wandb.log({"episode_step_count / optimal_steps": episode_step_count / (optimal_steps+1e-8)})
+                    wandb.log({"episode_reward": episode_reward, 'epoch': epoch})
+                    # reward_history.append(episode_reward)
+                    # if len(reward_history) % 100 == 0:
+                    #     sma = np.convolve(reward_history, np.ones(50)/50, mode='valid')
+                    #     wandb.log({"reward_sma": sma})
                     if step_d[0]:
                         log_path = config['LOG']['log_path']
                         logger.info(f"{episode_step_count} Goodbye World. We ({env.num_agents} agents) did it!\n")
@@ -360,12 +361,13 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
                             logger.debug(f"world map: \n {env.env.world.state}\n")
                             for agent in env.agents:
                                 logger.debug(f"\tagent_name: {agent.id_label}, \tagent_st_pos: {agent.start_pos}, \t agent_goal: {agent.goal}")
+                                logger.debug(f"obsacle: {np.where(env.env.world.state == -1)}")
                             logger.debug(f"episode_step_count / optimal_steps: {episode_step_count / (optimal_steps+1e-8)}")
                             # logger.debug("\n\n")
                             if episode_step_count / (optimal_steps+1e-8) <= config["episode_step_count"]:
                                 config["episode_step_count"] = episode_step_count / (optimal_steps+1e-8)
-                                torch.save(actor_net, f'params/model_params1.pth')
-                                logger.debug(f"\n\n======Save model parameters with current min episode_step_count/optimal_steps {episode_step_count / (optimal_steps+1e-8)}======\n\n")
+                                torch.save(actor_net, config['SAVE']['model'])
+                                logger.debug(f"\n\n======Save model parameters with current min episode_step_count/optimal_steps {episode_step_count / (optimal_steps+1e-8)} in {config['SAVE']['model']}======\n\n")
 
                         env.env.finished = True
                     else:
@@ -373,35 +375,104 @@ def train_a2c(env, actor_net, critic_net, config, epochs=int(1e4), actor_lr=0.00
                         logger.info(f"Current World Closed at {episode_step_count} episode_step. We failed. See Next Time!\n")
                         break
 
-#config
-config = load_config('/home/bld/HK_RL/RLagents_v3/config.yml')
-# device
-device = torch.device(f"cuda:{config['gpu_id']}") if torch.cuda.is_available() else torch.device("cpu") 
-config['device'] = device
-# seed
-seed = seed_set(config['SEED'])
-config['SEED'] = seed   
+def wandb_set(args,config):
+    notes = f"map_size: {args.map_size}x{args.map_size}, map_density: {args.map_density}, imi_prob: {args.imi_prob}, seed: {config['SEED']}"
+    mode = 'disabled' if not args.wandb_log else 'online'
+    wandb.login()
+    wandb.init(
+        # set the wandb project where this run will be logged
+        project="RLagents_v3",
+        notes=notes,
+        # track hyperparameters and run metadata
+        config=config,
+        mode=mode,
+    )
 
-# logname
-current_time = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
-file_path = Path(__file__).parent
 
-config['PATH']['path_id'] = f"path_{current_time}"
-config['LOG']['log_path'] = Path(f"{file_path}/logs/log_{current_time}.log")
-logger = configure_logger(config['LOG']['log_path'])
-# logger = logging.getLogger()
-config['LOG']['logger'] = logger
-logger.info(f"MODEL SEED: {config['SEED']}")
-logger.info(f"DEVICE: {device}")
+def config_loading(args, config_file):
+    #config
+    config = load_config(args.config_file)
+    # device
+    device = torch.device(f"cuda:{args.gpu_id}") if torch.cuda.is_available() else torch.device("cpu") 
+    config['device'] = device
+    # seed
+    seed = seed_set(config['SEED'])
+    config['SEED'] = seed       
 
-# 创建网络和环境
-env = mMAPFEnv({'map_name':'mMAPF'})
-actor_net = ActorNet(env.observation_space, env.action_space, config).to(device)
-critic_net = ActorNet(env.observation_space, env.action_space, config).to(device)
-critic_net.load_state_dict(actor_net.state_dict())
+    # logname
+    current_time = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
+    file_path = Path(__file__).parent
 
-# actor_net = ActorNet(env.observation_space, env.action_space, config)
-# critic_net = CriticNet()
-train_a2c(env, actor_net, critic_net, config)
-# 训练
-wandb.finish()
+    config['PATH']['path_id'] = f"path_{current_time}"
+    config['LOG']['log_path'] = Path(f"{file_path}/logs/log_{current_time}.log")
+    logger = configure_logger(config['LOG']['log_path'])
+    # logger = logging.getLogger()
+    config['LOG']['logger'] = logger
+    logger.info(f"MODEL SEED: {config['SEED']}")
+    logger.info(f"DEVICE: {device}")
+    logger.info(f"CONFIG: {config}")
+
+    config.update({'DEFALT_PROB_IMITATION': args.imi_prob})
+    config['SAVE']['model'] = f"params/model_params_{args.map_size}_obstacle_{args.map_density}_imiprob_{args.imi_prob}_{config['SEED']}_tst4vis.pth"
+    return config
+
+def env_creator(args):
+    return lambda config: mMAPFEnv({'map_name': 'mMAPF'}, args)
+
+def main():
+    parser = argparse.ArgumentParser(description='Train A2C on MAPF')
+    parser.add_argument('--gpu_id', type=int, default=0, help='gpu id')
+    parser.add_argument('--map_size', type=int, default=40, help='map size')
+    parser.add_argument('--map_density', type=float, default=0.01, help='obstacke density of map')
+    parser.add_argument('--imi_prob', type=float, default=0.5, help='imitation probability')
+    parser.add_argument('--wandb_log', action='store_true', help='log to wandb')
+    parser.add_argument('--observation_size', type=int, default=10, help='the range of observation')
+    # parser.add_argument('--render_mode', type=str, default='human', help='rgb_array or human')
+    parser.add_argument('--render_mode', action='store_true', help='true for rgb_array or false for human')
+    parser.add_argument('--config_file', type=str, default='/home/bld/HK_RL/RLagents_v3/config.yml', help='config file')
+    args = parser.parse_args()
+
+
+    config = config_loading(args, args.config_file)
+    if args.render_mode:
+        args.render_mode = 'rgb_array'
+    else:
+        args.render_mode = 'human'
+    # 创建网络和环境
+    # env = mMAPFEnv({'map_name':'mMAPF'}, args)
+    # config1 = config.copy()
+    # config1.update(env.env.config)
+    # wandb_set(args,config1)
+    
+    # register_env('mMAPF-v0', env_creater(args))
+    register_env('mMAPF-v1', env_creator(args))
+    ray.init()
+    config_ray = (  # 1. Configure the algorithm,
+        PPOConfig()
+        .environment("mMAPF-v1")  # 环境名称
+        .rollouts(num_rollout_workers=2)  # 训练时worker数量
+        .framework("torch")  # 使用的深度学习框架
+        .training(model={"fcnet_hiddens": [64, 64]})  # 神经网络隐藏层节点数
+        .evaluation(evaluation_num_workers=1)  # evaluation worker数量
+    )
+
+    algo = config_ray.build()
+    for _ in range(10):
+        result = algo.train()
+        print("episode mean reward: ", result["episode_reward_mean"] )  # 3. train it,
+
+    algo.evaluate()  # 4. and evaluate it.
+    
+    
+
+
+    # actor_net = ActorNet(env.observation_space, env.action_space, config).to(config['device'])
+    # critic_net = CriticNet().to(config['device'])
+    # actor_net = ActorNet(env.observation_space, env.action_space, config)
+    # critic_net = CriticNet()
+    # train_a2c(env, actor_net, critic_net, config)
+    # 训练
+    wandb.finish()
+
+if __name__ == '__main__':
+    main()
